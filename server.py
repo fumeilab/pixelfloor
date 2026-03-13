@@ -1,7 +1,7 @@
 """PixelFloor Server — Lightweight FastAPI WebSocket relay.
 
 Usage:
-  python server.py                          # Serve on port 8420
+  python server.py                          # Serve on port 3000
   python server.py --port 3000              # Custom port
   python server.py --log-file app.log       # Tail a log file and broadcast
 """
@@ -148,7 +148,7 @@ async def startup():
 def main():
     global _log_file_path
     parser = argparse.ArgumentParser(description="PixelFloor Server")
-    parser.add_argument("--port", type=int, default=8420)
+    parser.add_argument("--port", type=int, default=3000)
     parser.add_argument(
         "--log-file", type=str, default=None, help="Log file to tail and broadcast"
     )

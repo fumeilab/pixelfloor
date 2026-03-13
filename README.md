@@ -39,7 +39,7 @@ xdg-open index.html
 ```bash
 pip install -r requirements.txt
 python server.py
-# Visit http://localhost:8420
+# Visit http://localhost:3000
 ```
 
 ### 3. With a custom config
@@ -59,7 +59,7 @@ const floor = new PixelFloor({
     { from: 'scanner', to: 'processor' },
     { from: 'processor', to: 'output' },
   ],
-  websocket: 'ws://localhost:8420/ws',  // optional -- omit for JS-only control
+  websocket: 'ws://localhost:3000/ws',  // optional -- omit for JS-only control
 });
 </script>
 ```
@@ -87,7 +87,7 @@ const floor = new PixelFloor({
   flows: [
     { from: 'scanner', to: 'processor' },  // Defines particle paths
   ],
-  websocket: 'ws://localhost:8420/ws',      // Optional WebSocket URL
+  websocket: 'ws://localhost:3000/ws',      // Optional WebSocket URL
 });
 ```
 
@@ -239,7 +239,7 @@ Valid states: `"working"`, `"celebrating"`, `"error"`, `"idle"`.
 ### Usage
 
 ```bash
-python server.py                              # Serve on port 8420
+python server.py                              # Serve on port 3000
 python server.py --port 3000                  # Custom port
 python server.py --log-file myapp.log         # Tail a log file and broadcast lines
 ```
@@ -257,7 +257,7 @@ For systems that prefer HTTP over WebSocket, the server exposes REST endpoints t
 
 ```bash
 # Example: trigger an agent state change via curl
-curl -X POST http://localhost:8420/api/event \
+curl -X POST http://localhost:3000/api/event \
   -H "Content-Type: application/json" \
   -d '{"agent": "scanner", "state": "celebrating", "speech": "Done!", "duration": 300}'
 ```
@@ -274,7 +274,7 @@ import json
 import websockets
 
 async def notify_pixelfloor():
-    async with websockets.connect("ws://localhost:8420/ws") as ws:
+    async with websockets.connect("ws://localhost:3000/ws") as ws:
         # Set an agent to working
         await ws.send(json.dumps({
             "type": "agent_state",
@@ -305,7 +305,7 @@ asyncio.run(notify_pixelfloor())
 ```python
 import requests
 
-requests.post("http://localhost:8420/api/event", json={
+requests.post("http://localhost:3000/api/event", json={
     "agent": "scanner",
     "state": "celebrating",
     "speech": "Found 3 results!",
@@ -317,7 +317,7 @@ requests.post("http://localhost:8420/api/event", json={
 
 ```js
 const WebSocket = require('ws');
-const ws = new WebSocket('ws://localhost:8420/ws');
+const ws = new WebSocket('ws://localhost:3000/ws');
 
 ws.on('open', () => {
   ws.send(JSON.stringify({
