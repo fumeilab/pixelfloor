@@ -23,6 +23,86 @@ PixelFloor renders a cozy office where pixel characters represent your agents. T
 
 ---
 
+## Getting Started: Add Your Own Agents in 2 Minutes
+
+PixelFloor ships with a 9-agent demo, but setting up your own pipeline is just a config swap.
+
+### Step 1: Define your agents
+
+Open `index.html` and find the `DEMO_CONFIG` object near the bottom. Replace it with your pipeline:
+
+```js
+window.PIXELFLOOR_CONFIG = {
+  title: 'My RAG Pipeline',
+  agents: [
+    { id: 'scraper',   name: 'Scraper',  role: 'Web Crawler',   color: '#4A90D9', sprite: 'hacker',     position: 0 },
+    { id: 'embedder',  name: 'Embed',    role: 'Embeddings',    color: '#E8B830', sprite: 'scientist',  position: 2 },
+    { id: 'retriever', name: 'Fetch',    role: 'Vector Search', color: '#22D3EE', sprite: 'researcher', position: 4 },
+    { id: 'llm',       name: 'Brain',    role: 'LLM Generator', color: '#8B5CF6', sprite: 'analyst',    position: 7 },
+  ],
+  flows: [
+    { from: 'scraper',   to: 'embedder' },
+    { from: 'embedder',  to: 'retriever' },
+    { from: 'retriever', to: 'llm' },
+  ],
+};
+```
+
+Each agent needs: an `id` (for API calls), a `name` (display), a `sprite` (pick from 9 characters), and a `position` (desk 0-8 in the office). Flows define the particle paths between agents.
+
+### Step 2: Drive it from your code
+
+**From Python** (using the included server):
+
+```python
+import requests
+
+URL = "http://localhost:8421"
+
+# Agent starts working
+requests.post(f"{URL}/api/event", json={
+    "agent": "scraper", "state": "working", "speech": "Crawling 12 pages..."
+})
+
+# Data flows to next agent
+requests.post(f"{URL}/api/particle", json={
+    "from_agent": "scraper", "to_agent": "embedder"
+})
+
+# Agent celebrates when done
+requests.post(f"{URL}/api/event", json={
+    "agent": "llm", "state": "celebrating", "speech": "Response ready!"
+})
+```
+
+**From JavaScript** (in the browser console or your frontend):
+
+```js
+const floor = window._pixelFloorInstance;
+floor.agentWorking('scraper', 'Crawling site...');
+floor.sendParticle('scraper', 'embedder');
+floor.agentCelebrating('llm', 'Response ready!');
+```
+
+**From any language** via WebSocket:
+
+```json
+{"type": "agent_state", "agent": "scraper", "state": "working", "speech": "Crawling..."}
+{"type": "particle", "from": "scraper", "to": "embedder"}
+```
+
+### Step 3: Run it
+
+```bash
+pip install -r requirements.txt
+python server.py --port 8421
+# Open http://localhost:8421
+```
+
+Or skip the server entirely -- just open `index.html` in a browser. Without a WebSocket connection, demo mode kicks in automatically to show off the animations.
+
+---
+
 ## Quick Start
 
 ### 1. Just open it
