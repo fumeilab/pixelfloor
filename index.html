@@ -276,6 +276,41 @@
   .agent-name { font-weight: bold; min-width: 60px; }
   .agent-role { color: #555; min-width: 120px; }
   .agent-status { min-width: 60px; }
+
+  /* === TICKER BANNER === */
+  #ticker-banner {
+    width: 100%;
+    background: #0a0a12;
+    border-bottom: 1px solid #1a1a2a;
+    overflow: hidden;
+    white-space: nowrap;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  #ticker-inner {
+    display: inline-block;
+    animation: tickerScroll 30s linear infinite;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding-left: 100%;
+  }
+  #ticker-inner .ticker-agent {
+    margin-right: 24px;
+  }
+  #ticker-inner .ticker-name {
+    font-weight: bold;
+  }
+  #ticker-inner .ticker-idle { color: #555; }
+  #ticker-inner .ticker-working { color: #22c55e; }
+  #ticker-inner .ticker-celebrating { color: #f59e0b; }
+  #ticker-inner .ticker-error { color: #ef4444; }
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
 </style>
 </head>
 <body>
@@ -288,6 +323,10 @@
     <span id="agent-count">Agents: 0</span>
   </div>
   <div id="metric-counter" class="metric-neutral">Events: 0</div>
+</div>
+
+<div id="ticker-banner">
+  <div id="ticker-inner"></div>
 </div>
 
 <div id="canvas-container">
@@ -1739,18 +1778,6 @@ function drawTickerBoard(tx, ty) {
   ctx.font = `${6 * S}px 'Courier New', monospace`;
   ctx.fillStyle = '#555';
   ctx.fillText('EVENTS', x - 4*S + w/2, y + 34*S);
-  // Scrolling ticker — show agent status summaries
-  ctx.fillStyle = P.tickerBg;
-  ctx.fillRect(x - 4*S, y + h - 8*S, w, 8*S);
-  ctx.fillStyle = P.tickerYellow;
-  const scrollOffset = (tick * 2) % (w + 200*S);
-  ctx.font = `${4 * S}px 'Courier New', monospace`;
-  let tickerText = '';
-  for (const [id, ag] of Object.entries(AGENTS)) {
-    const stateLabel = ag.state === 'idle' ? 'idle' : ag.state === 'working' ? 'ACTIVE' : ag.state === 'celebrating' ? 'OK!' : ag.state;
-    tickerText += ag.name + ':' + stateLabel + '  ';
-  }
-  ctx.fillText(tickerText, x - 4*S + w - scrollOffset, y + h - 2*S);
   ctx.textAlign = 'left';
 }
 
@@ -2459,6 +2486,33 @@ function updateMetricCounter() {
   el.textContent = 'Events: ' + eventCount;
   el.className = eventCount > 0 ? 'metric-positive' : 'metric-neutral';
 }
+
+function updateTickerBanner() {
+  const inner = document.getElementById('ticker-inner');
+  if (!inner) return;
+  while (inner.firstChild) inner.removeChild(inner.firstChild);
+  // Build agent status spans twice (so scroll loops seamlessly)
+  for (let pass = 0; pass < 2; pass++) {
+    for (const [id, ag] of Object.entries(AGENTS)) {
+      const stateLabel = ag.state === 'idle' ? 'idle' : ag.state === 'working' ? 'ACTIVE' : ag.state === 'celebrating' ? 'OK!' : ag.state;
+      const span = document.createElement('span');
+      span.className = 'ticker-agent';
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'ticker-name';
+      nameSpan.style.color = ag.color;
+      nameSpan.textContent = ag.name;
+      span.appendChild(nameSpan);
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'ticker-' + ag.state;
+      statusSpan.textContent = ' ' + stateLabel + (ag.speech ? ' \u2014 ' + ag.speech : '');
+      span.appendChild(statusSpan);
+      inner.appendChild(span);
+    }
+  }
+}
+
+// Update ticker every second
+setInterval(updateTickerBanner, 1000);
 
 // ────────────────────────────────────────────────────────────
 // 5. WebSocket Connection
