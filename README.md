@@ -411,6 +411,13 @@ ws.on('open', () => {
 
 ---
 
+## Support
+
+If you find PixelFloor useful, consider buying us a coffee:
+
+- **ETH:** `0x450081c69630BfBcA8354a83Fd9948f4993751E1`
+- **BTC:** `bc1q70m03kp9fz43kt6mjgnymltg6f8z4qdq3jvedu`
+
 ## License
 
 MIT -- see [LICENSE](LICENSE).
