@@ -4,7 +4,7 @@
 
 PixelFloor renders a cozy office where pixel characters represent your agents. They work, celebrate, chat, and pass data to each other in real-time. Use it standalone as a demo or connect it to a live backend via WebSocket to watch your pipeline come alive.
 
-[screenshot placeholder]
+![PixelFloor Demo](screenshot.png)
 
 ---
 
